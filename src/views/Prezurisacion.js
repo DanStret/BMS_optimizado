@@ -21,14 +21,14 @@ function Prezurisacion() {
   const [rampState, setRampState] = useState(false);
   const [reverseState, setReverseState] = useState(false);
   const [data, setData] = useState({
-          tensionMotor: 0,
-          tensionDC	: 0,
-          corriente: 0,
-          potencia: 0,
-          frecuencia: 0,
-          temperatura: 0,
-          ia: 0,
-          av: 0
+    tensionMotor: 0,
+    tensionDC: 0,
+    corriente: 0,
+    potencia: 0,
+    frecuencia: 0,
+    temperatura: 0,
+    ia: 0,
+    av: 0
   })
 
   const fetchLedStatus = async () => {
@@ -190,7 +190,7 @@ function Prezurisacion() {
                 </div>
                 <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
                   <span>Reverse</span>
-                  <ToggleSwitch  onToggle={handleReverseToggle} />
+                  <ToggleSwitch onToggle={handleReverseToggle} />
                 </div>
                 <Button label="Ver Imagen" onClick={toggleImageModal} />
               </div>
@@ -215,20 +215,43 @@ function Prezurisacion() {
               <GaugeComponent
                 type="semicircle"
                 arc={{
-                  colorArray: ['#00FF15', '#FF2121'],
+                  colorArray: ['#FF2121', '#FF8C00', '#FFD700', '#00FF15'], // Colores para representar distintos niveles
                   padding: 0.02,
                   subArcs: [
-                    { limit: 40 },
-                    { limit: 60 },
-                    { limit: 70 },
-                    {},
-                    {},
-                    {},
-                    {}
+                    { limit: 15, color: '#FF2121' }, // Rango verde hasta 15hz
+                    { limit: 30, color: '#FFD700' }, // Amarillo hasta 30hz
+                    { limit: 45, color: '#FF8C00' }, // Naranja hasta 45hz
+                    { limit: 60, color: '#00FF15' } // Rojo hasta 60hz
                   ]
                 }}
-                pointer={{ type: "blob", animationDelay: 0 }}
-                value={data.frecuencia} // Ajusta el valor para cada métrica
+                pointer={{
+                  type: "blob",
+                  animationDelay: 0,
+                  length: 0.8,
+                  width: 15
+                }}
+                labels={{
+                  valueLabel: {
+                    formatTextValue: (value) => `${value} Hz` // Mostrar en grados Celsius
+                  },
+                  tickLabels: {
+                    type: 'outer',
+                    defaultTickValueConfig: {
+                      formatTextValue: (value) => `${value} Hz`,
+                      style: { fontSize: 10 }
+                    },
+                    ticks: [
+                      { value: 0, label: '0 Hz' },
+                      { value: 15, label: '15 Hz' },
+                      { value: 30, label: '30 Hz' },
+                      { value: 45, label: '45 Hz' },
+                      { value: 60, label: '60 Hz' }
+                    ],
+                  }
+                }}
+                value={data.frecuencia} // Ajusta el valor para cada métrica en grados Celsius
+                minValue={0} // Establece el mínimo
+                maxValue={60} // Establece el máximo para que quede bien alineado
               />
             </CardBody>
           </Card>
@@ -243,20 +266,43 @@ function Prezurisacion() {
               <GaugeComponent
                 type="semicircle"
                 arc={{
-                  colorArray: ['#00FF15', '#FF2121'],
+                  colorArray: ['#00FF15', '#FFD700', '#FF8C00', '#FF2121'], // Colores para representar distintos niveles
                   padding: 0.02,
                   subArcs: [
-                    { limit: 40 },
-                    { limit: 60 },
-                    { limit: 70 },
-                    {},
-                    {},
-                    {},
-                    {}
+                    { limit: 10, color: '#00FF15' }, // Rango verde hasta 25°C
+                    { limit: 20, color: '#FFD700' }, // Amarillo hasta 50°C
+                    { limit: 30, color: '#FF8C00' }, // Naranja hasta 75°C
+                    { limit: 40, color: '#FF2121' } // Rojo hasta 100°C
                   ]
                 }}
-                pointer={{ type: "blob", animationDelay: 0 }}
-                value={data.corriente} // Ajusta el valor para cada métrica
+                pointer={{
+                  type: "blob",
+                  animationDelay: 0,
+                  length: 0.8,
+                  width: 15
+                }}
+                labels={{
+                  valueLabel: {
+                    formatTextValue: (value) => `${value} A` // Mostrar en grados Celsius
+                  },
+                  tickLabels: {
+                    type: 'outer',
+                    defaultTickValueConfig: {
+                      formatTextValue: (value) => `${value} A`,
+                      style: { fontSize: 10 }
+                    },
+                    ticks: [
+                      { value: 0, label: '0 A' },
+                      { value: 10, label: '10 A' },
+                      { value: 20, label: '20 A' },
+                      { value: 30, label: '30 A' },
+                      { value: 40, label: '40 A' }
+                    ],
+                  }
+                }}
+                value={data.corriente} // Ajusta el valor para cada métrica en grados Celsius
+                minValue={0} // Establece el mínimo
+                maxValue={40} // Establece el máximo para que quede bien alineado
               />
             </CardBody>
           </Card>
@@ -271,20 +317,43 @@ function Prezurisacion() {
               <GaugeComponent
                 type="semicircle"
                 arc={{
-                  colorArray: ['#00FF15', '#FF2121'],
+                  colorArray: ['#00FF15', '#FFD700', '#FF8C00', '#FF2121'], // Colores para representar distintos niveles
                   padding: 0.02,
                   subArcs: [
-                    { limit: 40 },
-                    { limit: 60 },
-                    { limit: 70 },
-                    {},
-                    {},
-                    {},
-                    {}
+                    { limit: 15, color: '#00FF15' }, // Rango verde hasta 25°C
+                    { limit: 25, color: '#FFD700' }, // Amarillo hasta 50°C
+                    { limit: 45, color: '#FF8C00' }, // Naranja hasta 75°C
+                    { limit: 70, color: '#FF2121' } // Rojo hasta 100°C
                   ]
                 }}
-                pointer={{ type: "blob", animationDelay: 0 }}
-                value={data.potencia} // Ajusta el valor para cada métrica
+                pointer={{
+                  type: "blob",
+                  animationDelay: 0,
+                  length: 0.8,
+                  width: 15
+                }}
+                labels={{
+                  valueLabel: {
+                    formatTextValue: (value) => `${value} Kw` // Mostrar en grados Celsius
+                  },
+                  tickLabels: {
+                    type: 'outer',
+                    defaultTickValueConfig: {
+                      formatTextValue: (value) => `${value} Kw`,
+                      style: { fontSize: 10 }
+                    },
+                    ticks: [
+                      { value: 0, label: '0 Kw' },
+                      { value: 15, label: '15 Kw' },
+                      { value: 25, label: '25 Kw' },
+                      { value: 45, label: '45 Kw' },
+                      { value: 70, label: '75 Kw' }
+                    ],
+                  }
+                }}
+                value={data.corriente} // Ajusta el valor para cada métrica en grados Celsius
+                minValue={0} // Establece el mínimo
+                maxValue={70} // Establece el máximo para que quede bien alineado
               />
             </CardBody>
           </Card>
@@ -297,23 +366,48 @@ function Prezurisacion() {
                 <h6 style={{ margin: 0 }}>Temperatura (°C)</h6>
               </div>
               <GaugeComponent
-                type="semicircle"
-                arc={{
-                  colorArray: ['#00FF15', '#FF2121'],
-                  padding: 0.02,
-                  subArcs: [
-                    { limit: 40 },
-                    { limit: 60 },
-                    { limit: 70 },
-                    {},
-                    {},
-                    {},
-                    {}
-                  ]
-                }}
-                pointer={{ type: "blob", animationDelay: 0 }}
-                value={data.temperatura} // Ajusta el valor para cada métrica
-              />
+  type="semicircle"
+  arc={{
+    colorArray: ['#00FF15', '#FFB400', '#FF2121'], // Colores para bajo, medio, y alto
+    padding: 0.02,
+    subArcs: [
+      { limit: 30, color: '#00FF15' },  // Verde para temperaturas bajas
+      { limit: 60, color: '#FFD700' },  // Amarillo para temperaturas medias
+      { limit: 90, color: '#FFA500' },  // Naranja para temperaturas moderadamente altas
+      { limit: 120, color: '#FF4500' },  // Rojo claro para altas
+      { limit: 150, color: '#FF2121' }  // Rojo fuerte para muy altas
+    ]
+  }}
+  pointer={{
+    type: "blob", 
+    animationDelay: 0,
+    color: '#345243',  // Color para el puntero
+    length: 0.8,  // Ajusta la longitud del puntero para que sea visible
+    width: 15
+  }}
+  labels={{
+    valueLabel: { formatTextValue: (value) => `${value}ºC` },  // Muestra el valor actual con ºC
+    tickLabels: {
+      type: 'outer',
+      defaultTickValueConfig: { 
+        formatTextValue: (value) => `${value}ºC`,
+        style: { fontSize: 10 }
+      },
+      ticks: [
+        { value: 0, label: '0ºC' },
+        { value: 30, label: '30ºC' },
+        { value: 60, label: '60ºC' },
+        { value: 90, label: '90ºC' },
+        { value: 120, label: '120ºC' },
+        { value: 150, label: '150ºC' }
+      ]
+    }
+  }}
+  value={data.temperatura}  // Ajusta el valor para cada métrica (en grados Celsius)
+  minValue={0}  // Rango mínimo
+  maxValue={150}  // Rango máximo
+/>
+
             </CardBody>
           </Card>
         </Col>
