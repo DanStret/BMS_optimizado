@@ -30,10 +30,19 @@ function Prezurisacion() {
     temperatura: 0,
     ia: 0,
     av: 0
+    tensionMotor: 0,
+    tensionDC: 0,
+    corriente: 0,
+    potencia: 0,
+    frecuencia: 0,
+    temperatura: 0,
+    ia: 0,
+    av: 0
   })
 
   const fetchLedStatus = async () => {
     try {
+      const response = await fetch("https://apibms.onrender.com/api/led-status");
       const response = await fetch("https://apibms.onrender.com/api/led-status");
       const data = await response.json();
       if (data && data.color) {
@@ -59,6 +68,7 @@ function Prezurisacion() {
 
   const fetchDeviceStatus = async () => {
     try {
+      const response = await fetch("https://apibms.onrender.com/api/device-status");
       const response = await fetch("https://apibms.onrender.com/api/device-status");
       const data = await response.json();
 
@@ -101,6 +111,7 @@ function Prezurisacion() {
   const enviarComando = async (dispositivo, comando, estado) => {
     try {
       await fetch("https://apibms.onrender.com/api/send-command", {
+      await fetch("https://apibms.onrender.com/api/send-command", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ dispositivo, comando, estado }),
@@ -112,6 +123,7 @@ function Prezurisacion() {
 
   const fetchIndicators = async () => {
     try {
+      const response = await fetch("https://apibms.onrender.com/api/indicadores");
       const response = await fetch("https://apibms.onrender.com/api/indicadores");
       const result = await response.json();
       setData(result);
@@ -237,8 +249,43 @@ function Prezurisacion() {
                 type="semicircle"
                 arc={{
                   colorArray: ['#FF2121', '#FF8C00', '#FFD700', '#00FF15'], // Colores para representar distintos niveles
+                  colorArray: ['#FF2121', '#FF8C00', '#FFD700', '#00FF15'], // Colores para representar distintos niveles
                   padding: 0.02,
                   subArcs: [
+                    { limit: 15, color: '#FF2121' }, // Rango verde hasta 15hz
+                    { limit: 30, color: '#FFD700' }, // Amarillo hasta 30hz
+                    { limit: 45, color: '#FF8C00' }, // Naranja hasta 45hz
+                    { limit: 60, color: '#00FF15' } // Rojo hasta 60hz
+                  ]
+                }}
+                pointer={{
+                  type: "blob",
+                  animationDelay: 0,
+                  length: 0.8,
+                  width: 15
+                }}
+                labels={{
+                  valueLabel: {
+                    formatTextValue: (value) => `${value} Hz` // Mostrar en grados Celsius
+                  },
+                  tickLabels: {
+                    type: 'outer',
+                    defaultTickValueConfig: {
+                      formatTextValue: (value) => `${value} Hz`,
+                      style: { fontSize: 10 }
+                    },
+                    ticks: [
+                      { value: 0, label: '0 Hz' },
+                      { value: 15, label: '15 Hz' },
+                      { value: 30, label: '30 Hz' },
+                      { value: 45, label: '45 Hz' },
+                      { value: 60, label: '60 Hz' }
+                    ],
+                  }
+                }}
+                value={data.frecuencia} // Ajusta el valor para cada métrica en grados Celsius
+                minValue={0} // Establece el mínimo
+                maxValue={60} // Establece el máximo para que quede bien alineado
                     { limit: 15, color: '#FF2121' }, // Rango verde hasta 15hz
                     { limit: 30, color: '#FFD700' }, // Amarillo hasta 30hz
                     { limit: 45, color: '#FF8C00' }, // Naranja hasta 45hz
@@ -288,8 +335,43 @@ function Prezurisacion() {
                 type="semicircle"
                 arc={{
                   colorArray: ['#00FF15', '#FFD700', '#FF8C00', '#FF2121'], // Colores para representar distintos niveles
+                  colorArray: ['#00FF15', '#FFD700', '#FF8C00', '#FF2121'], // Colores para representar distintos niveles
                   padding: 0.02,
                   subArcs: [
+                    { limit: 10, color: '#00FF15' }, // Rango verde hasta 25°C
+                    { limit: 20, color: '#FFD700' }, // Amarillo hasta 50°C
+                    { limit: 30, color: '#FF8C00' }, // Naranja hasta 75°C
+                    { limit: 40, color: '#FF2121' } // Rojo hasta 100°C
+                  ]
+                }}
+                pointer={{
+                  type: "blob",
+                  animationDelay: 0,
+                  length: 0.8,
+                  width: 15
+                }}
+                labels={{
+                  valueLabel: {
+                    formatTextValue: (value) => `${value} A` // Mostrar en grados Celsius
+                  },
+                  tickLabels: {
+                    type: 'outer',
+                    defaultTickValueConfig: {
+                      formatTextValue: (value) => `${value} A`,
+                      style: { fontSize: 10 }
+                    },
+                    ticks: [
+                      { value: 0, label: '0 A' },
+                      { value: 10, label: '10 A' },
+                      { value: 20, label: '20 A' },
+                      { value: 30, label: '30 A' },
+                      { value: 40, label: '40 A' }
+                    ],
+                  }
+                }}
+                value={data.corriente} // Ajusta el valor para cada métrica en grados Celsius
+                minValue={0} // Establece el mínimo
+                maxValue={40} // Establece el máximo para que quede bien alineado
                     { limit: 10, color: '#00FF15' }, // Rango verde hasta 25°C
                     { limit: 20, color: '#FFD700' }, // Amarillo hasta 50°C
                     { limit: 30, color: '#FF8C00' }, // Naranja hasta 75°C
@@ -339,8 +421,43 @@ function Prezurisacion() {
                 type="semicircle"
                 arc={{
                   colorArray: ['#00FF15', '#FFD700', '#FF8C00', '#FF2121'], // Colores para representar distintos niveles
+                  colorArray: ['#00FF15', '#FFD700', '#FF8C00', '#FF2121'], // Colores para representar distintos niveles
                   padding: 0.02,
                   subArcs: [
+                    { limit: 15, color: '#00FF15' }, // Rango verde hasta 25°C
+                    { limit: 25, color: '#FFD700' }, // Amarillo hasta 50°C
+                    { limit: 45, color: '#FF8C00' }, // Naranja hasta 75°C
+                    { limit: 70, color: '#FF2121' } // Rojo hasta 100°C
+                  ]
+                }}
+                pointer={{
+                  type: "blob",
+                  animationDelay: 0,
+                  length: 0.8,
+                  width: 15
+                }}
+                labels={{
+                  valueLabel: {
+                    formatTextValue: (value) => `${value} Kw` // Mostrar en grados Celsius
+                  },
+                  tickLabels: {
+                    type: 'outer',
+                    defaultTickValueConfig: {
+                      formatTextValue: (value) => `${value} Kw`,
+                      style: { fontSize: 10 }
+                    },
+                    ticks: [
+                      { value: 0, label: '0 Kw' },
+                      { value: 15, label: '15 Kw' },
+                      { value: 25, label: '25 Kw' },
+                      { value: 45, label: '45 Kw' },
+                      { value: 70, label: '75 Kw' }
+                    ],
+                  }
+                }}
+                value={data.corriente} // Ajusta el valor para cada métrica en grados Celsius
+                minValue={0} // Establece el mínimo
+                maxValue={70} // Establece el máximo para que quede bien alineado
                     { limit: 15, color: '#00FF15' }, // Rango verde hasta 25°C
                     { limit: 25, color: '#FFD700' }, // Amarillo hasta 50°C
                     { limit: 45, color: '#FF8C00' }, // Naranja hasta 75°C
