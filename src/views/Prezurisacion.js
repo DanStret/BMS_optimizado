@@ -33,7 +33,7 @@ function Prezurisacion() {
 
   const fetchLedStatus = async () => {
     try {
-      const response = await fetch("http://localhost:3001/led-status");
+      const response = await fetch("https://apibms.onrender.com/api/led-status");
       const data = await response.json();
       if (data && data.color) {
         setLedColor(data.color);
@@ -58,7 +58,7 @@ function Prezurisacion() {
 
   const fetchDeviceStatus = async () => {
     try {
-      const response = await fetch("http://localhost:3001/device-status");
+      const response = await fetch("https://apibms.onrender.com/api/device-status");
       const data = await response.json();
 
       // Actualizar el estado de cada dispositivo basado en los datos obtenidos
@@ -99,7 +99,7 @@ function Prezurisacion() {
 
   const enviarComando = async (dispositivo, comando, estado) => {
     try {
-      await fetch("http://localhost:3001/send-command", {
+      await fetch("https://apibms.onrender.com/api/send-command", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ dispositivo, comando, estado }),
@@ -111,7 +111,7 @@ function Prezurisacion() {
 
   const fetchIndicators = async () => {
     try {
-      const response = await fetch("http://localhost:3001/indicadores");
+      const response = await fetch("https://apibms.onrender.com/api/indicadores");
       const result = await response.json();
       setData(result);
     } catch (error) {
