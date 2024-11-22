@@ -13,8 +13,10 @@ function LedIndicator({ color = "red" }) {
         return "rgba(255, 191, 0, 0.8)"; // Ámbar
       case "negro":
         return "rgba(0, 0, 0, 0.8)"; // Negro
+      case "plomo":
+        return "rgba(138,149,151)";
       default:
-        return "rgba(255, 0, 0, 0.8)"; // Rojo por defecto si no hay coincidencia
+        return "rgba(0, 0, 0, 154)"; // Rojo por defecto si no hay coincidencia
     }
   };
 

@@ -25,15 +25,14 @@
     "react-scripts": "5.0.1",
     "sass": "1.62.1"
   },
-  "scripts": {
-  "start": "concurrently \"npm run server\" \"react-scripts start\"",
-  "server": "node src/api/server.js",
+"scripts": {
+  "start": "react-scripts start",
   "build": "cross-env PUBLIC_URL=/ cross-env CI=false react-scripts build",
   "test": "react-scripts test --env=jsdom",
   "eject": "react-scripts eject",
   "install:clean": "rm -rf node_modules/ && rm -rf package-lock.json && npm install && npm start",
   "compile-scss": "sass src/assets/scss/black-dashboard-react.scss src/assets/css/black-dashboard-react.css",
-  "minify-scss": "sass src/assets/scss/black-dashboard-react.scss src/assets/css/black-dashboard-react.min.css --style compressed"
+  "minify-scss": "sass src/assets/scss/black-dashboard-react.scss src/assets/css/black-dashboard-react.min.css --style compressed"
 }
 ,
   "eslintConfig": {

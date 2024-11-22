@@ -15,13 +15,7 @@
 
 */
 import React from "react";
-// nodejs library that concatenates classes
-import classNames from "classnames";
-
-// reactstrap components
 import {
-  Button,
-  ButtonGroup,
   DropdownToggle,
   DropdownMenu,
   DropdownItem,
@@ -29,12 +23,42 @@ import {
   Row,
   Col
 } from "reactstrap";
+import { useNavigate } from "react-router-dom";
 
-function Dashboard(props) {
+function Dashboard() {
+  const navigate = useNavigate();
+
+  const handleSelectPiso = (piso) => {
+    navigate(`/admin/piso${piso}`); // Uso correcto de template strings
+  };
+
   return (
     <>
       <div className="content">
-        {/* Solo se muestra el menú sin gráficas ni tabla */}
+        <Row className="justify-content-center">
+          <Col md="4" className="text-center">
+            <img 
+              alt="Edificio"
+              className="avatar"
+              src={require("assets/img/edificio.png")}
+            />
+            <UncontrolledDropdown direction="up">
+              <DropdownToggle caret color="primary" className="w-100">
+                Seleccionar Piso
+              </DropdownToggle>
+              <DropdownMenu>
+                <DropdownItem onClick={() => handleSelectPiso(1)}>Piso 1</DropdownItem>
+                <DropdownItem onClick={() => handleSelectPiso(2)}>Piso 2</DropdownItem>
+                <DropdownItem onClick={() => handleSelectPiso(3)}>Piso 3</DropdownItem>
+                <DropdownItem onClick={() => handleSelectPiso(4)}>Piso 4</DropdownItem>
+                <DropdownItem onClick={() => handleSelectPiso(5)}>Piso 5</DropdownItem>
+                <DropdownItem onClick={() => handleSelectPiso(6)}>Piso 6</DropdownItem>
+                <DropdownItem onClick={() => handleSelectPiso(7)}>Piso 7</DropdownItem>
+                <DropdownItem onClick={() => handleSelectPiso(8)}>Terraza</DropdownItem>
+             </DropdownMenu>
+            </UncontrolledDropdown>
+          </Col>
+        </Row>
       </div>
     </>
   );

@@ -1,18 +1,17 @@
 import React, { useState, useEffect } from "react";
-import '../assets/css/Prezurisacion.css'
 import { Card, CardBody, Row, Col } from "reactstrap";
 import { GaugeComponent } from "react-gauge-component";
-import ToggleSwitch from "../components/ToggleSwitch/ToggleSwitch";
-import Button from "../components/Comun/Buttons/Button";
-import LedIndicator from "../components/Comun/Leds/LedIndicator";
-import ImageModal from "../components/FixedPlugin/ImageModal/ImageModal"; // Importa el modal de imagen
+import ToggleSwitch from '../../components/ToggleSwitch/ToggleSwitch';
+import SystemStatus from "../../components/Comun/SystemStatus";
+import ImageModal from '../../components/FixedPlugin/ImageModal/ImageModal';
+import '../Sistemas/styles/Prezurisacion.css'
 import { FiActivity, FiZap, FiThermometer, FiPower, FiEye } from "react-icons/fi";
 import { MdOutlineSensors } from "react-icons/md";
 
 function Prezurisacion() {
-  const [ledColor, setLedColor] = useState("red");
-  const [ledStatusText, setLedStatusText] = useState("Desconocido");
-  const [isAutomatic, setIsAutomatic] = useState(true);
+  const [signals, setSignals] = useState([]);
+  const [states, setStates] = useState([]);
+  const [selectorMode, setSelectorMode] = useState(null);
   const [showImage, setShowImage] = useState(false);
   const [imageUrl] = useState("https://scontent.flim18-1.fna.fbcdn.net/v/t1.6435-9/138752942_123194292971714_2934574921352228503_n.jpg?_nc_cat=104&ccb=1-7&_nc_sid=833d8c&_nc_eui2=AeHj6t8q62SldDEucr6hK7OTtWPe9AOLp8S1Y970A4unxHlfxU3SJgc_EXhX_awb97TwMo87jD8aRp6PZGFEAivz&_nc_ohc=VaqMHVkZRKwQ7kNvgHpRUWb&_nc_ht=scontent.flim18-1.fna&_nc_gid=AhxO7BFmUblo62Y1vqnn8L9&oh=00_AYAtLBlVADTaUoliRGoi7gfP93d_mltptMVCBUtFF3z5hQ&oe=6740EF38");
 
@@ -32,29 +31,48 @@ function Prezurisacion() {
     av: 0
   })
 
-  const fetchLedStatus = async () => {
+
+
+
+  const fetchSystemStatus = async () => {
     try {
-      const response = await fetch("https://apibms.onrender.com/api/led-status");
-      const data = await response.json();
-      if (data && data.color) {
-        setLedColor(data.color);
-        updateStatusBasedOnColor(data.color);
-      }
+      const response = await fetch("http://localhost:3001/system-status/1"); // Cambia el ID según sea necesario
+      const { signals, states, selector } = await response.json();
+  
+      // Mantener los colores de las señales independientemente del estado
+      const processedSignals = signals.map((signal) => ({
+        ...signal,
+        color: signal.status === "ON" ? signal.color : "" // No depende del status
+      }));
+  
+      // Filtrar estados: solo enviar el color si el estado es "1"
+      const processedStates = states.map((state) => ({
+        ...state,
+        color: state.status === "1" ? state.color : "" // Color solo si está "1"
+      }));
+  
+      // Actualizar los estados en el componente
+      setSignals(processedSignals);
+      setStates(processedStates);
+  
+      // Actualizar el selector
+      setSelectorMode(selector.name || "AUTOMATICO");
     } catch (error) {
-      console.error("Error al obtener el estado del LED:", error);
+      console.error("Error al obtener el estado del sistema:", error);
     }
   };
-
-  const updateStatusBasedOnColor = (color) => {
-    const statusText = {
-      verde: "En funcionamiento",
-      ambar: "Modo Manual",
-      azul: "Modo BMS",
-      negro: "Humo Detectado",
-      rojo: "Apagado"
-    };
-    setLedStatusText(statusText[color] || "Desconocido");
-    setIsAutomatic(color === "verde");
+  
+  const handleToggleSelector = async (newMode) => {
+    try {
+      await fetch("http://localhost:3001/toggle-selector", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ mode: newMode }),
+      });
+      setSelectorMode(newMode); // Actualiza el estado tras la respuesta
+    } catch (error) {
+      console.error("Error al cambiar el modo:", error);
+    }
   };
 
   const fetchDeviceStatus = async () => {
@@ -87,16 +105,22 @@ function Prezurisacion() {
   };
 
   useEffect(() => {
-    fetchLedStatus();
-    fetchDeviceStatus();
-    fetchIndicators();
+    const fetchInitialData = async () => {
+      await fetchSystemStatus(); // Sincronizar el estado inicial
+      fetchDeviceStatus();
+      fetchIndicators();
+    };
+  
+    fetchInitialData();
     const intervalId = setInterval(() => {
-      fetchLedStatus();
+      fetchSystemStatus();
       fetchIndicators();
     }, 5000); // Actualiza cada 5 segundos
-
+  
     return () => clearInterval(intervalId);
   }, []);
+  
+  
 
   const enviarComando = async (dispositivo, comando, estado) => {
     try {
@@ -149,74 +173,62 @@ function Prezurisacion() {
     <div className="content">
       <h4>Panel de control</h4>
       <Row style={{ marginBottom: "20px" }}>
-        <Col md="6">
+      <SystemStatus
+          signals={signals}
+          states={{
+            parada: states.find(state => state.name === "PARADA")?.color || "",
+            marcha: states.find(state => state.name === "MARCHA")?.color || "",
+            error: states.find(state => state.name === "ERROR")?.color || "",
+          }}
+          selectorMode={selectorMode || "AUTOMATICO"} // Sincroniza con el estado inicial
+          onToggleSelector={handleToggleSelector} // Maneja el cambio
+        />
+
+        <Col md="6" className="card-container">
           <Card className="h-100">
-            <CardBody>
-              <h5>Estado del sistema</h5>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "10px" }}>
-                <LedIndicator color={ledColor} />
-                <span style={{ fontSize: "1rem", color: "#FFFFFF" }}>{ledStatusText}</span>
-                <Button
-                  label={isAutomatic ? "Automático" : "Manual"}
-                  onClick={() => setIsAutomatic(!isAutomatic)}
-                  style={{
-                    backgroundColor: isAutomatic ? "#007bff" : "#dc3545",
-                    color: "white",
-                    padding: "0.5rem 1rem",
-                    fontSize: "1rem",
-                    fontWeight: "bold",
-                  }}
-                />
+            <CardBody style={{ position: "relative" }}>
+              <h5>Controladores</h5>
+              <div style={{
+                display: "flex",
+                flexWrap: "wrap",
+                justifyContent: "center",
+                alignItems: "center",
+                gap: "10px",
+                height: "50%",
+              }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+                  <span>Variador</span>
+                  <ToggleSwitch initialState={variadorState} onToggle={handleVariadorToggle} />
+                </div>
+                <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+                  <span>Rele 1</span>
+                  <ToggleSwitch initialState={rele1State} onToggle={handleRele1Toggle} />
+                </div>
+                <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+                  <span>Ramp</span>
+                  <ToggleSwitch onToggle={handleRampToggle} />
+                </div>
+                <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+                  <span>Reverse</span>
+                  <ToggleSwitch onToggle={handleReverseToggle} />
+                </div>
               </div>
+
+              {/* Ícono de ojo en la esquina superior derecha */}
+              <FiEye
+                onClick={toggleImageModal} // Acción al hacer clic
+                style={{
+                  position: "absolute",
+                  top: "10px",
+                  right: "10px",
+                  fontSize: "1.5rem",
+                  color: "#007bff",
+                  cursor: "pointer"
+                }}
+              />
             </CardBody>
           </Card>
         </Col>
-
-        <Col md="6" className="card-container">
-  <Card className="h-100">
-    <CardBody style={{ position: "relative" }}>
-      <h5>Controladores</h5>
-      <div style={{
-        display: "flex",
-        flexWrap: "wrap",
-        justifyContent: "center",
-        alignItems: "center",
-        gap: "10px",
-        height: "50%",
-      }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
-          <span>Variador</span>
-          <ToggleSwitch initialState={variadorState} onToggle={handleVariadorToggle} />
-        </div>
-        <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
-          <span>Rele 1</span>
-          <ToggleSwitch initialState={rele1State} onToggle={handleRele1Toggle} />
-        </div>
-        <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
-          <span>Ramp</span>
-          <ToggleSwitch onToggle={handleRampToggle} />
-        </div>
-        <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
-          <span>Reverse</span>
-          <ToggleSwitch onToggle={handleReverseToggle} />
-        </div>
-      </div>
-
-      {/* Ícono de ojo en la esquina superior derecha */}
-      <FiEye
-        onClick={toggleImageModal} // Acción al hacer clic
-        style={{
-          position: "absolute",
-          top: "10px",
-          right: "10px",
-          fontSize: "1.5rem",
-          color: "#007bff",
-          cursor: "pointer"
-        }}
-      />
-    </CardBody>
-  </Card>
-</Col>
 
       </Row>
 

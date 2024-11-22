@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
-import '../assets/css/Prezurisacion.css'
+import '../Sistemas/styles/Prezurisacion.css'
 import { Card, CardBody, Row, Col } from "reactstrap";
 import { GaugeComponent } from "react-gauge-component";
-import ToggleSwitch from "../components/ToggleSwitch/ToggleSwitch";
-import Button from "../components/FixedPlugin/Buttons/Button";
-import LedIndicator from "../components/Leds/LedIndicator";
-import ImageModal from "../components/FixedPlugin/ImageModal/ImageModal"; // Importa el modal de imagen
+import ToggleSwitch from '../../components/ToggleSwitch/ToggleSwitch';
+import SystemStatus from "../../components/Comun/SystemStatus";
+import ImageModal from '../../components/FixedPlugin/ImageModal/ImageModal';
+
 import { FiActivity, FiZap, FiThermometer, FiPower, FiEye } from "react-icons/fi";
 import { MdOutlineSensors } from "react-icons/md";
 
@@ -31,19 +31,29 @@ function Prezurisacion() {
     ia: 0,
     av: 0
   })
+  const systemStates = [
+    { label: "Señal Humo", color: "green" },
+    { label: "Señal BMS", color: "green" },
+    { label: "Incendio", color: "green" },
+  ];
 
+  const mode = {
+    parada: "red",
+    marcha: "green",
+    error: "yellow",
+  };
   const fetchLedStatus = async () => {
     try {
       const response = await fetch("https://apibms.onrender.com/api/led-status");
       const data = await response.json();
-      if (data && data.color) {
-        setLedColor(data.color);
-        updateStatusBasedOnColor(data.color);
+      if (data) {
+        
       }
     } catch (error) {
-      console.error("Error al obtener el estado del LED:", error);
+      console.error("Error al obtener el estado de los LEDs:", error);
     }
   };
+  
 
   const updateStatusBasedOnColor = (color) => {
     const statusText = {
@@ -149,28 +159,9 @@ function Prezurisacion() {
     <div className="content">
       <h4>Panel de control</h4>
       <Row style={{ marginBottom: "20px" }}>
-        <Col md="6">
-          <Card className="h-100">
-            <CardBody>
-              <h5>Estado del sistema</h5>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "10px" }}>
-                <LedIndicator color={ledColor} />
-                <span style={{ fontSize: "1rem", color: "#FFFFFF" }}>{ledStatusText}</span>
-                <Button
-                  label={isAutomatic ? "Automático" : "Manual"}
-                  onClick={() => setIsAutomatic(!isAutomatic)}
-                  style={{
-                    backgroundColor: isAutomatic ? "#007bff" : "#dc3545",
-                    color: "white",
-                    padding: "0.5rem 1rem",
-                    fontSize: "1rem",
-                    fontWeight: "bold",
-                  }}
-                />
-              </div>
-            </CardBody>
-          </Card>
-        </Col>
+      <SystemStatus systemStates={systemStates} mode={mode} />
+
+
 
         <Col md="6" className="card-container">
   <Card className="h-100">

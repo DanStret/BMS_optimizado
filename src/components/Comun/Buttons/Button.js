@@ -10,7 +10,7 @@ function Button({ label, onClick, className = '', disabled = false }) {
         backgroundColor: "#007bff",  
         color: "white",              
         border: "none",              
-        padding: "8px 16px",         
+        padding: "8px 10px",         
         borderRadius: "8px",         
         cursor: disabled ? "not-allowed" : "pointer",
         fontSize: "16px",            
