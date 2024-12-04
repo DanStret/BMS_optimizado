@@ -36,7 +36,7 @@ function Prezurisacion() {
 
   const fetchSystemStatus = async () => {
     try {
-      const response = await fetch("http://localhost:3001/system-status/1"); // Cambia el ID según sea necesario
+      const response = await fetch("https://apibms.onrender.com/api/system-status/1"); // Cambia el ID según sea necesario
       const { signals, states, selector } = await response.json();
   
       // Mantener los colores de las señales independientemente del estado
@@ -64,7 +64,7 @@ function Prezurisacion() {
   
   const handleToggleSelector = async (newMode) => {
     try {
-      await fetch("http://localhost:3001/toggle-selector", {
+      await fetch("https://apibms.onrender.com/api/toggle-selector", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ mode: newMode }),
