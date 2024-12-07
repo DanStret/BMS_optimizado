@@ -125,15 +125,25 @@ function Prezurisacion() {
 
   const enviarComando = async (dispositivo, comando, estado) => {
     try {
-      await fetch("https://apibms.onrender.com/api/send-command", {
+      const response = await fetch("https://apibms.onrender.com/api/send-command", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify({ dispositivo, comando, estado }),
       });
+  
+      if (!response.ok) {
+        const errorDetails = await response.json();
+        console.error("Error en la API:", errorDetails);
+      } else {
+        console.log("Comando enviado correctamente");
+      }
     } catch (error) {
       console.error("Error al enviar el comando:", error);
     }
-  }
+  };
+  
 
   const fetchIndicators = async () => {
     try {
@@ -385,7 +395,7 @@ function Prezurisacion() {
                     ],
                   }
                 }}
-                value={data.corriente} // Ajusta el valor para cada métrica en grados Celsius
+                value={data.potencia} // Ajusta el valor para cada métrica en grados Celsius
                 minValue={0} // Establece el mínimo
                 maxValue={70} // Establece el máximo para que quede bien alineado
               />

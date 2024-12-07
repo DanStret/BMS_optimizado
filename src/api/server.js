@@ -13,7 +13,7 @@ const connection = mysql.createConnection({
   host: 'localhost',
   user: 'root',
   password: 'usbw',
-  database: 'multisystembms',
+  database: 'sistemapresurizacion',
 });
 
 // Ruta para obtener el estado del sistema
