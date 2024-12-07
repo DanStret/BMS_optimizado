@@ -114,6 +114,7 @@ function Prezurisacion() {
     fetchInitialData();
     const intervalId = setInterval(() => {
       fetchSystemStatus();
+      fetchDeviceStatus();
       fetchIndicators();
     }, 5000); // Actualiza cada 5 segundos
   
